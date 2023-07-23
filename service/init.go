@@ -11,8 +11,6 @@ import (
 
 const connectionString = "mongodb://localhost:27017"
 
-const dbName = "natours"
-
 func ConnectMongoDB() mongo.Client {
 
 	clientOptions := options.Client().ApplyURI(connectionString)
