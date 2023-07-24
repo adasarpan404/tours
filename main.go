@@ -4,24 +4,20 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 
-	"github.com/adasarpan404/tours/service"
-	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
+	"github/adasarpan404/tours/router"
 )
 
-var Client mongo.Client
-
-func loadEnvFromFile(filePath string) error {
-	file, err := os.Open(filePath)
+func loadFromEnv(filepath string) error {
+	file, err := os.Open(filepath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
-
 	for scanner.Scan() {
 		line := scanner.Text()
 		parts := strings.SplitN(line, "=", 2)
@@ -32,17 +28,16 @@ func loadEnvFromFile(filePath string) error {
 	if err := scanner.Err(); err != nil {
 		return err
 	}
-
 	return nil
 }
-
 func main() {
-	err := loadEnvFromFile("config.env")
+	err := loadFromEnv("config.env")
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("API Server for touring")
-	router := gin.New()
-	Client = service.ConnectMongoDB()
-	router.Run(":8080")
+	r := router.Router()
+	fmt.Println("Server is getting started...")
+	log.Fatal(http.ListenAndServe(":4000", r))
+	fmt.Println("Listening at port 4000 ...")
 }
